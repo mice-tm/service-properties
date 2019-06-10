@@ -1,6 +1,6 @@
 let mongoose = require('mongoose');
 
-const propertiesDSN = 'mongodb://api_dbu:api_pass@localhost:27117/properties';
+const propertiesDSN = process.env.MONGODB_DSN;
 
 mongoose.connect(propertiesDSN, { useNewUrlParser: true });
 mongoose.set('debug', true);

@@ -1,7 +1,7 @@
+require('dotenv').config();
+
 let express = require('express');
-
 let app = express();
-
 let propertiesRoute = require('./routes/properties');
 
 app.use(propertiesRoute);
