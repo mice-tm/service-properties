@@ -5,11 +5,19 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
+    "start-watch": "nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "service-properties"
   ],
   "author": "Iryna Mychkova",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.5.13"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
 }
