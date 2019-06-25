@@ -4,6 +4,7 @@ class PropertyService {
   }
   search (searchModel) {
     let pipelines = [];
+    const skip = (searchModel.perPage * searchModel.page) - searchModel.perPage;
     if (searchModel.filters) {
       pipelines.push({
         '$match': searchModel.filters
@@ -30,47 +31,31 @@ class PropertyService {
       pipelines.push({
         '$project': this.explodeProjectFromFields(searchModel.fields)
       })
+    } else {
+      if (searchModel.locale) {
+        pipelines.push(PropertyService.getLocalizedProjectionFields(locale))
+      }
     }
-console.log(pipelines);
-    // return pipelines;
+
+    pipelines.push({
+      '$sort': {'name': 1}
+    });
+
+    pipelines.push({
+      '$facet': {
+        'metadata': [
+          {'$count': 'total'}
+        ],
+        'models': [
+          {'$skip': skip},
+          {'$limit': searchModel.perPage}
+        ]
+      }
+    });
+
     return this.propertyModel.aggregate(pipelines)
-    //   .limit(searchModel.perPage)
-    //   .skip((searchModel.page - 1) * searchModel.perPage)
       .exec()
     ;
-  //   $this->perPage = $request->getQueryParam('per-page');
-  //   $this->fields = $request->getQueryParam('fields');
-  //
-  //   if ($this->load($request->getQueryParams(), '') && $this->validate()) {
-  //     if ($tags = array_filter(explode(',', $this->tags))) {
-  //       $query->andWhere(['tags' => ['$in' => $tags]]);
-  //     }
-  //     $query
-  //       ->setLocale($this->locale)
-  //   ->setEmbeddedFilter($this->embeddedFilter)
-  //   ->andFilterWhere(['type' => array_filter(explode(',', $this->types))]);
-  //     if ($names = $request->getQueryParam('names', null)) {
-  //       $query->andFilterWhere(['name' => array_filter(explode(',', $names))]);
-  //     }
-  //   }
-  //
-  //   $this->filterPages();
-  //
-  //   $aggregationResult = $query->getAggregateData($this->perPage, $this->page, $this->fields);
-  //
-  //   $pagination = new Pagination();
-  //   $pagination->setPageSize($aggregationResult->getPerPage());
-  //   if ($aggregationResult->getCurrentPage() > 1) {
-  //     $pagination->setPage($aggregationResult->getCurrentPage());
-  //   }
-  //   $pagination->totalCount = $aggregationResult->getTotalCount();
-  //
-  //   $dataProvider = new ArrayDataProvider([
-  //     'allModels' => $aggregationResult->getData(),
-  //     'pagination' => $pagination
-  // ]);
-
-    return result;
   }
 
   explodeProjectFromFields (fields) {
@@ -93,6 +78,34 @@ console.log(pipelines);
     });
     return Object.assign({}, ...fieldsProjection);
 
+  }
+
+  static getLocalizedProjectionFields(locale)
+  {
+    let fields = {
+      '_id': true,
+      'name': true,
+      'type': true,
+      'title': {
+        'en': true
+      },
+    'active': true,
+    'values': {
+      'value': {
+        'en': true
+      },
+      'active': true,
+      'id': true,
+      'image': true,
+      'url': true,
+    },
+    'isSystem': true,
+    'tags': true,
+    'url': true,
+    };
+    fields.title[locale] = true;
+    fields.values.value[locale] = true;
+    return fields;
   }
 }
 
