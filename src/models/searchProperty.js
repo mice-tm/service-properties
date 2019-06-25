@@ -7,7 +7,7 @@ class SearchProperty {
       embeddedFilter = [],
       page = 1,
       perPage = 20,
-      fields = '*',
+      fields = '',
       names = ''
     } = {}) {
     if ('string' !== typeof tags) {
@@ -54,17 +54,17 @@ class SearchProperty {
   get filters () {
     let filters = {};
     if (this.tags) {
-      filters.tags = this.splitValue(this.tags);
+      filters.tags = {'$in': this.splitValue(this.tags)};
     }
     if (this.types) {
-      filters.type = this.splitValue(this.types);
+      filters.type = {'$in': this.splitValue(this.types)};
     }
     if (this.names) {
-      filters.name = this.splitValue(this.names);
+      filters.name = {'$in': this.splitValue(this.names)};
     }
-    if (this.embeddedFilter && this.embeddedFilter[VALUE_IDS]) {
+    if (this.hasValueIdsFilter()) {
       filters[VALUE_IDS] = {
-        '$in': this.embeddedFilter[VALUE_IDS].split(',')
+        '$in': this.valueIds
       }
 
     }
@@ -76,6 +76,15 @@ class SearchProperty {
       return value.split(',');
     }
     return [];
+  }
+
+  hasValueIdsFilter () {
+    return (this.embeddedFilter && this.embeddedFilter[VALUE_IDS]);
+  }
+
+  get valueIds () {
+    console.log(this.embeddedFilter[VALUE_IDS].split(',').map(parseInt));
+    return this.embeddedFilter[VALUE_IDS].split(',').map(Number);
   }
 
 }
