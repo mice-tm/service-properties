@@ -4,7 +4,7 @@ let router = express.Router();
 let PropertyModel = require('../models/property');
 let SearchProperty = require('../models/searchProperty');
 let PropertyService = require('../cservices/propertyService');
-
+let AggregationResult = require('../models/aggregationResult');
 
 router.get('/api/v2/properties', (request, response) => {
   // throw new Error('This is a forced error!');
@@ -15,7 +15,12 @@ router.get('/api/v2/properties', (request, response) => {
     if (!docs) {
       response.json([]);
     } else {
-      response.json(docs);
+      const aggregaionResult = new AggregationResult(docs.shift());
+      response.set('X-Pagination-Total-Count', aggregaionResult.totalCount);
+      response.set('X-Pagination-Page-Count', aggregaionResult.pageCount);
+      response.set('X-Pagination-Current-Pag', aggregaionResult.currentPage);
+      response.set('X-Pagination-Per-Page', aggregaionResult.perPage);
+      response.json(aggregaionResult.models);
     }
   }).catch(error => {
     response.status(500).json(error);
@@ -43,8 +48,5 @@ router.get('/api/v2/properties/:name', (request, response) => {
 router.get('/api/v2/properties/:name/path', (request, response) => {
   response.send(`Property path ${request.params.name} requested.`);
 });
-
-
-
 
 module.exports = router;
