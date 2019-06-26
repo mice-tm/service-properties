@@ -1,4 +1,4 @@
-version: '3'
+version: '2.4'
 services:
   app:
     container_name: node
@@ -14,4 +14,8 @@ services:
     restart: always
     ports:
       - 3779:3779
-    command: npm start
+    command: npm run start-watch
+    mem_limit: 40840M
+    cpu_shares: 73
+    cpu_count: 2
+    cpus: 0.5
