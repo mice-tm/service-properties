@@ -3,12 +3,13 @@ let router = express.Router();
 
 let PropertyModel = require('../models/property');
 let SearchProperty = require('../models/searchProperty');
-let PropertyService = require('../cservices/propertyService');
+let PropertyService = require('../services/propertyService');
 let AggregationResult = require('../models/aggregationResult');
 
 router.get('/api/v2/properties', (request, response) => {
   // throw new Error('This is a forced error!');
   const searchModel = new SearchProperty(request.query);
+  searchModel.setPerPage(typeof request.query['per-page'] !== 'undefined' ? request.query['per-page'] : 20);
   let propertyService = new PropertyService(PropertyModel);
 
   propertyService.search(searchModel).then(docs => {

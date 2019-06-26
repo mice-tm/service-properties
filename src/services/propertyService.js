@@ -29,11 +29,15 @@ class PropertyService {
 
     if (searchModel.fields) {
       pipelines.push({
-        '$project': this.explodeProjectFromFields(searchModel.fields)
+        '$project': this.explodeProjectFromFields(searchModel.fields, {'_id': false})
       })
     } else {
       if (searchModel.locale) {
-        pipelines.push(PropertyService.getLocalizedProjectionFields(locale))
+        pipelines.push({
+          '$project': PropertyService.getLocalizedProjectionFields(
+            searchModel.locale
+          )
+        })
       }
     }
 
@@ -52,31 +56,23 @@ class PropertyService {
         ]
       }
     });
-
     return this.propertyModel.aggregate(pipelines)
       .exec()
     ;
   }
 
-  explodeProjectFromFields (fields) {
+  explodeProjectFromFields (fields, base = {}) {
     let fieldsProjection = fields.split(',');
     if (!fieldsProjection) {
-      return {};
+      return base;
     }
-
-    // fieldsProjection.forEach(function (subpath) {
-    //   if (subpath.indexOf('.') >= 0 ) {
-    //     fieldsProjection = fieldsProjection.concat(subpath.split('.'));
-    //     console.log(subpath, fieldsProjection);
-    //   }
-    // });
 
     fieldsProjection = fieldsProjection.map(function (key) {
       let item = {};
       item[key] = true;
       return item;
     });
-    return Object.assign({}, ...fieldsProjection);
+    return Object.assign(base, ...fieldsProjection);
 
   }
 

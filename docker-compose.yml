@@ -1,0 +1,17 @@
+version: '3'
+services:
+  app:
+    container_name: node
+    image: node
+    build:
+      context: ./
+      dockerfile: Dockerfile_loc
+      args:
+        buildno: 1
+    volumes:
+      - .:/usr/src/service
+    working_dir: /usr/src/service
+    restart: always
+    ports:
+      - 3779:3779
+    command: npm start

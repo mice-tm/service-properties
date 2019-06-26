@@ -6,7 +6,6 @@ class SearchProperty {
       locale = 'en',
       embeddedFilter = [],
       page = 1,
-      perPage = 20,
       fields = '',
       names = ''
     } = {}) {
@@ -29,12 +28,9 @@ class SearchProperty {
       throw new Error('EmbeddedFilter is invalid!');
     }
     page = Number(page);
-    perPage = Number(perPage);
+
     if (page < 1) {
       page = 1;
-    }
-    if (perPage > 1000) {
-      perPage = 1000;
     }
 
     this.tags = tags;
@@ -42,7 +38,6 @@ class SearchProperty {
     this.locale = locale;
     this.embeddedFilter = embeddedFilter;
     this.page = page;
-    this.perPage = perPage;
     this.fields = fields;
     this.names = names;
   }
@@ -83,10 +78,16 @@ class SearchProperty {
   }
 
   get valueIds () {
-    console.log(this.embeddedFilter[VALUE_IDS].split(',').map(parseInt));
     return this.embeddedFilter[VALUE_IDS].split(',').map(Number);
   }
 
+  setPerPage(perPage) {
+    perPage = Number(perPage);
+    if (perPage > 1000) {
+      perPage = 1000;
+    }
+    this.perPage = perPage;
+  }
 }
 
 module.exports = SearchProperty;
