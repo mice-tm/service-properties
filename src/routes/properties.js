@@ -16,12 +16,12 @@ router.get('/api/v2/properties', (request, response) => {
     if (!docs) {
       response.json([]);
     } else {
-      const aggregaionResult = new AggregationResult(docs.shift());
-      response.set('X-Pagination-Total-Count', aggregaionResult.totalCount);
-      response.set('X-Pagination-Page-Count', aggregaionResult.pageCount);
-      response.set('X-Pagination-Current-Pag', aggregaionResult.currentPage);
-      response.set('X-Pagination-Per-Page', aggregaionResult.perPage);
-      response.json(aggregaionResult.models);
+      const aggregationResult = new AggregationResult(docs.shift());
+      response.set('X-Pagination-Total-Count', aggregationResult.totalCount);
+      response.set('X-Pagination-Page-Count', aggregationResult.pageCount);
+      response.set('X-Pagination-Current-Pag', aggregationResult.currentPage);
+      response.set('X-Pagination-Per-Page', aggregationResult.perPage);
+      response.json(aggregationResult.models);
     }
   }).catch(error => {
     response.status(500).json(error);
